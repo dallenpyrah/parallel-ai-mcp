@@ -3,9 +3,8 @@ import os
 from typing import Optional, Dict, Any, List
 from fastmcp import FastMCP
 import httpx
-from starlette.applications import Starlette
 from starlette.responses import JSONResponse
-from starlette.routing import Route, Mount
+from starlette.routing import Route
 
 mcp = FastMCP("Parallel Search MCP")
 
@@ -125,12 +124,9 @@ mcp_app = mcp.http_app(path="/mcp")
 async def health(request):
     return JSONResponse({"status": "ok", "server": "Parallel Search MCP"})
 
-app = Starlette(
-    routes=[
-        Route("/health", health, methods=["GET"]),
-        Mount("/", app=mcp_app),
-    ]
-)
+mcp_app.routes.append(Route("/health", health, methods=["GET"]))
+
+app = mcp_app
 
 if __name__ == "__main__":
     import uvicorn
