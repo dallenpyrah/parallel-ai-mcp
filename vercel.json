@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": null,
   "routes": [
     {
       "src": "/(.*)",
@@ -12,3 +13,4 @@
     }
   }
 }
+
