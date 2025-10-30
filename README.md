@@ -1,6 +1,15 @@
 # Parallel Search MCP Server
 
-A Model Context Protocol (MCP) server for Parallel Search API, deployed on Vercel.
+A Model Context Protocol (MCP) server for Parallel Search API, built with ElysiaJS and deployed on Vercel.
+
+## Features
+
+- 🔍 Web search with natural language objectives
+- 🚀 Fast deployment on Vercel serverless
+- 🔐 User-provided API keys (no cost to server owner)
+- 📊 Ranked, LLM-optimized results with citations
+- ⚙️ Customizable processors (base/pro)
+- 🌐 Built with ElysiaJS and TypeScript
 
 ## Deployment
 
@@ -15,10 +24,10 @@ A Model Context Protocol (MCP) server for Parallel Search API, deployed on Verce
 
 ```bash
 # Install dependencies
-pip install -r requirements.txt
+bun install
 
 # Run locally
-python src/server.py
+bun run dev
 
 # Test with MCP Inspector
 npx @modelcontextprotocol/inspector@latest http://localhost:8000/mcp
@@ -43,14 +52,6 @@ Add to your `.cursor/mcp.json`:
 
 **Note:** Each user needs their own Parallel API key from https://parallel.ai
 
-## Features
-
-- 🔍 Web search with natural language objectives
-- 🚀 Fast deployment on Vercel serverless
-- 🔐 User-provided API keys (no cost to server owner)
-- 📊 Ranked, LLM-optimized results with citations
-- ⚙️ Customizable processors (base/pro)
-
 ## Tool: `parallel_search`
 
 ### Parameters
@@ -68,6 +69,24 @@ Add to your `.cursor/mcp.json`:
 In Cursor/Claude:
 ```
 Search for "latest developments in quantum computing" using parallel_search
+```
+
+## API Endpoints
+
+- `GET /health` - Health check endpoint
+- `POST /mcp` - MCP protocol endpoint
+
+## Development
+
+```bash
+# Install dependencies
+bun install
+
+# Run development server
+bun run dev
+
+# Build for production
+bun run build
 ```
 
 ## License

@@ -1,0 +1,35 @@
+{
+  "name": "parallel-search-mcp",
+  "version": "1.0.0",
+  "description": "Parallel Search MCP Server using Elysia",
+  "type": "module",
+  "main": "src/server.ts",
+  "scripts": {
+    "dev": "bun run src/server.ts",
+    "start": "bun run src/server.ts",
+    "build": "bun build src/server.ts --outdir ./dist --target bun",
+    "test": "bun test"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "elysia",
+    "parallel-search"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "elysia": "^1.1.19",
+    "elysia-mcp": "^0.0.12",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}
+
