@@ -7,7 +7,7 @@ from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 from starlette.routing import Route, Mount
 
-mcp = FastMCP("Parallel Search MCP", stateless_http=True)
+mcp = FastMCP("Parallel Search MCP")
 
 @mcp.tool()
 async def parallel_search(
