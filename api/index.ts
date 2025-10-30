@@ -15,7 +15,11 @@ async function getRequestBody(req: VercelRequest): Promise<string | undefined> {
   }
   
   if (typeof req.body === 'object') {
-    return JSON.stringify(req.body);
+    try {
+      return JSON.stringify(req.body);
+    } catch {
+      return undefined;
+    }
   }
   
   return undefined;
@@ -78,10 +82,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     console.log('Request URL:', req.url);
     console.log('Request method:', req.method);
-    console.log('Request headers:', JSON.stringify(req.headers));
-    console.log('Body length:', body?.length || 0);
+    console.log('Body:', body?.substring(0, 200));
     
     const response = await app.fetch(request);
+    
+    console.log('Response status:', response.status);
+    const responseHeaders: Record<string, string> = {};
+    response.headers.forEach((value, key) => {
+      responseHeaders[key] = value;
+    });
+    console.log('Response headers:', responseHeaders);
+    
     await toResponse(res, response);
   } catch (error) {
     console.error('Error handling request:', error);
