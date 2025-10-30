@@ -1,12 +1,32 @@
 import app from '../src/server.js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-function toRequest(req: VercelRequest): Request {
+async function getRequestBody(req: VercelRequest): Promise<string | undefined> {
+  if (!req.body) {
+    return undefined;
+  }
+  
+  if (typeof req.body === 'string') {
+    return req.body;
+  }
+  
+  if (Buffer.isBuffer(req.body)) {
+    return req.body.toString('utf-8');
+  }
+  
+  if (typeof req.body === 'object') {
+    return JSON.stringify(req.body);
+  }
+  
+  return undefined;
+}
+
+function toRequest(req: VercelRequest, body?: string): Request {
   const url = `https://${req.headers.host || 'localhost'}${req.url || '/'}`;
   const headers = new Headers();
   
   Object.entries(req.headers).forEach(([key, value]) => {
-    if (value) {
+    if (value && key.toLowerCase() !== 'content-length') {
       if (Array.isArray(value)) {
         value.forEach(v => headers.append(key, String(v)));
       } else {
@@ -15,19 +35,21 @@ function toRequest(req: VercelRequest): Request {
     }
   });
 
+  if (!headers.has('accept') && req.url === '/mcp') {
+    headers.set('accept', 'application/json, text/event-stream');
+  }
+
+  if (body && !headers.has('content-type')) {
+    headers.set('content-type', 'application/json');
+  }
+
   const init: RequestInit = {
     method: req.method || 'GET',
     headers,
   };
 
-  if (req.body && (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH')) {
-    if (typeof req.body === 'string') {
-      init.body = req.body;
-    } else if (req.body instanceof Buffer) {
-      init.body = req.body.toString();
-    } else {
-      init.body = JSON.stringify(req.body);
-    }
+  if (body && (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH')) {
+    init.body = body;
   }
 
   return new Request(url, init);
@@ -51,14 +73,26 @@ async function toResponse(res: VercelResponse, response: Response): Promise<void
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    const request = toRequest(req);
+    const body = await getRequestBody(req);
+    const request = toRequest(req, body);
+    
+    console.log('Request URL:', req.url);
+    console.log('Request method:', req.method);
+    console.log('Request headers:', JSON.stringify(req.headers));
+    console.log('Body length:', body?.length || 0);
+    
     const response = await app.fetch(request);
     await toResponse(res, response);
   } catch (error) {
     console.error('Error handling request:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Error stack:', error instanceof Error ? error.stack : String(error));
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : String(error)
+    });
   }
 }
+
 
 
 
