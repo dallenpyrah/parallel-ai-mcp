@@ -3,19 +3,6 @@ import { mcp } from 'elysia-mcp';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-declare global {
-  namespace NodeJS {
-    interface ProcessEnv {
-      PARALLEL_API_KEY?: string;
-      PORT?: string;
-      VERCEL?: string;
-    }
-  }
-  const process: {
-    env: NodeJS.ProcessEnv;
-  } | undefined;
-}
-
 const PARALLEL_API_URL = 'https://api.parallel.ai/v1beta/search';
 
 async function parallelSearch(args: {
@@ -33,7 +20,7 @@ async function parallelSearch(args: {
     return 'Error: At least one of \'objective\' or \'search_queries\' is required.';
   }
 
-  const apiKeyToUse = api_key || (typeof process !== 'undefined' && process?.env ? process.env.PARALLEL_API_KEY : undefined);
+  const apiKeyToUse = api_key || (typeof process !== 'undefined' && process.env ? process.env.PARALLEL_API_KEY : undefined);
 
   if (!apiKeyToUse) {
     return (
