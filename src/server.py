@@ -1,11 +1,13 @@
 """Parallel Search MCP Server using FastMCP."""
 import os
 from typing import Optional, Dict, Any, List
-from fastapi import FastAPI
 from fastmcp import FastMCP
 import httpx
+from starlette.applications import Starlette
+from starlette.responses import JSONResponse
+from starlette.routing import Route, Mount
 
-mcp = FastMCP("Parallel Search MCP")
+mcp = FastMCP("Parallel Search MCP", stateless_http=True)
 
 @mcp.tool()
 async def parallel_search(
@@ -118,15 +120,18 @@ async def parallel_search(
         return f"Error calling Parallel Search API: {str(e)}"
 
 
-mcp_app = mcp.http_app()
+mcp_app = mcp.http_app(path="/mcp")
 
-app = FastAPI()
+async def health(request):
+    return JSONResponse({"status": "ok", "server": "Parallel Search MCP"})
 
-app.mount("/", mcp_app)
-
-@app.get("/health")
-async def health():
-    return {"status": "ok", "server": "Parallel Search MCP"}
+app = Starlette(
+    routes=[
+        Route("/health", health, methods=["GET"]),
+        Mount("/", app=mcp_app),
+    ]
+)
 
 if __name__ == "__main__":
-    mcp.run(transport="streamable-http", port=8000, stateless_http=True)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
