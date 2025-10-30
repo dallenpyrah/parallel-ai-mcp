@@ -1,13 +1,11 @@
 """Parallel Search MCP Server using FastMCP."""
 import os
 from typing import Optional, Dict, Any, List
+from fastapi import FastAPI
 from fastmcp import FastMCP
 import httpx
 
-mcp = FastMCP(
-    "Parallel Search MCP",
-    stateless_http=True
-)
+mcp = FastMCP("Parallel Search MCP")
 
 @mcp.tool()
 async def parallel_search(
@@ -120,12 +118,15 @@ async def parallel_search(
         return f"Error calling Parallel Search API: {str(e)}"
 
 
-app = mcp.create_fastapi_app()
+mcp_app = mcp.http_app()
+
+app = FastAPI()
+
+app.mount("/", mcp_app)
 
 @app.get("/health")
 async def health():
     return {"status": "ok", "server": "Parallel Search MCP"}
 
-
 if __name__ == "__main__":
-    mcp.run(transport="streamable-http", port=8000)
+    mcp.run(transport="streamable-http", port=8000, stateless_http=True)
