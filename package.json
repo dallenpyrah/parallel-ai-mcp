@@ -19,6 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
+    "@vercel/node": "^5.5.2",
     "elysia": "^1.1.19",
     "elysia-mcp": "^0.0.12",
     "zod": "^3.23.8"
@@ -31,4 +32,3 @@
     "bun": ">=1.0.0"
   }
 }
-
